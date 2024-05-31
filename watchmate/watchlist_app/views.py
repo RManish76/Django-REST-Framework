@@ -1,3 +1,6 @@
+# will use api foldere views.py instead of app folder views.py
+
+'''
 from django.shortcuts import render
 from . import models
 from django.http import JsonResponse
@@ -26,3 +29,4 @@ def movie_details(request, pk):
     # .value() is only available for QuerySet Object.
     # so we can only access data using attributes like movie.name or movie.status etc
     return JsonResponse(data)
+'''
