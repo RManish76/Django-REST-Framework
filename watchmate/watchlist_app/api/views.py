@@ -1,4 +1,5 @@
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.decorators import api_view
 from watchlist_app import models
 from . import serializers
@@ -30,13 +31,17 @@ def movie_list(request):
             serializer.save()
             return Response(serializer.data)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET','PUT','DELETE'])
 def movie_details(request, pk):
     if request.method == 'GET':
-        movie = models.Movie.objects.get(pk=pk)
+        try:
+            movie = models.Movie.objects.get(pk=pk)
+        except models.Movie.DoesNotExist:
+            return Response({'Error':'Movie does not exist'},status=status.HTTP_404_NOT_FOUND)
         serializer = serializers.MovieSerializer(movie)
+
         return Response(serializer.data)
         """
         now serializer has converted the data  but it's still a object and to access that data
@@ -53,10 +58,10 @@ def movie_details(request, pk):
             serializer.save()
             return Response(serializer.data)
         else:
-            return Response(serializer.errors)        
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
 
     if request.method == 'DELETE':
         movie = models.Movie.objects.get(pk=pk)
         movie.delete()
-        return Response('you data is deleted.')
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
