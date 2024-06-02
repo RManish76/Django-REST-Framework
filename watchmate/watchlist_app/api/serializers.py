@@ -1,10 +1,17 @@
 from rest_framework import serializers
 from watchlist_app import models
 
+#function for validation and can called in field itself. It can be used with any filed.
+#for now used on description field.
+def length_check(value):
+    if len(value)<5:
+        raise serializers.ValidationError("Input is too short!")
+
+
 class MovieSerializer(serializers.Serializer): #convention of naming class ModelSerializer
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField()
-    description = serializers.CharField()
+    description = serializers.CharField(validators=[length_check])
     active = serializers.BooleanField()
 
     def create(self, validated_data):
@@ -24,5 +31,18 @@ class MovieSerializer(serializers.Serializer): #convention of naming class Model
         instance.save()
         return instance
     
+    # object level validation -> can do for all field
+    def validate(self, data): #function name has to be validate nothing else
+        if data['name'] == data['description']:
+            raise serializers.ValidationError("Title and Description should be different!")
+        else:
+            return data
+    
+    # field level validation -> validate specifice filed
+    def validate_name(self, value): #function name has to be of schema of validate_fieldname -> i.e validate_name
+        if len(value)<2:
+            raise serializers.ValidationError("Name is too short!")
+        else:
+            return value
     
     
