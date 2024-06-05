@@ -4,6 +4,11 @@ from watchlist_app import models
 #==================using serializers.ModelSerializers=================================
 
 class MovieSerializer(serializers.ModelSerializer):
+
+    # custom read only variable/object to show user.
+    # for calculation function is defined below meta class. it'll work even if we define it above meta class.
+    len_name = serializers.SerializerMethodField() 
+
     class Meta:
         model = models.Movie
         fields = "__all__"    #can also put list of filed if all fields not needed.
@@ -15,6 +20,10 @@ class MovieSerializer(serializers.ModelSerializer):
         # we'll pass list of fields to exclude variable which we do not want.
         # it'll remove that filed and show the others.
         #exclude = ['active']
+
+    # function of our custom read only variable which will return the value to show the user.
+    def get_len_name(self, object):
+        return len(object.name)
 
     #now if need of validator we need to defnine it outside of meta class.
     def validate(self, data): #function name has to be validate nothing else
